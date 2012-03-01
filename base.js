@@ -31,13 +31,6 @@ if (JExtendArray) {
 }
 
 
-// Create the 'J' namespace
-var J = J || {};
-if (typeof(J) !== 'object') {
-  J = {};
-}
-
-
 // Simple mixin function - add the properties of 'mixin' to the object
 // 'receiver'
 J.Mix = function(receiver, mixin) {
@@ -50,6 +43,11 @@ J.Mix = function(receiver, mixin) {
 };
 
 
+// Create the 'namespace' specified by the dot-separated
+// path 'name'. Namespaces are heirarchichal collections of
+// objects rooted at 'window'
+//
+// e.g. J.CreateNamespace('j.comms.websocket')
 J.CreateNamespace = function(name) {
 	var comps = name.split('.');
 	var l = comps.length;
@@ -75,6 +73,16 @@ J.CreateNamespace = function(name) {
 	return curr_ns;
 }
 
+
+// Perform a counting sort on an object of the form key -> count.
+// Eg J.SortObject(
+//  {
+//    key : 1,
+//    key2 : 3,
+//  })
+//
+// Will return an array containing the keys of the object in ascending
+// order of count. [key2, key] in this case.
 J.SortObject = function(obj) {
   var count = [];
   var result = [];
@@ -121,6 +129,17 @@ J.SortObject = function(obj) {
 };
 
 
+
+// Perform a counting sort on the array of objects 'to_sort', returning
+// an array containing the objects in sorted order.
+// 
+// 'scorer' should point to a function that will assign a score to an 
+// object. E.g:
+//
+// J.CountSortObjects(
+//    [{ name: 'James', count: 1}, {name: 'Jack', count: 8}],
+//    function(o) { return o.count; }
+// );
 J.CountSortObjects = function(to_sort, scorer) {
   if (!scorer || typeof(scorer) !== "function") {
     console.warn('J.CountSortObjects: scorer must be a function');
@@ -178,6 +197,8 @@ J.CountSortObjects = function(to_sort, scorer) {
   return result;
 };
 
+
+// Count sort the array of numbers 'to_sort'
 J.CountingSort = function(to_sort) {
   var count = [];
   var result = [];
