@@ -14,10 +14,12 @@
       AlbumName : ko.observable(""),
       Tags : this._tagging._tags,
       ProgressMessage : ko.observable(""),
-      Loading : ko.observable(false)
+      Loading : ko.observable(false),
+      Profile: ko.observable({})
     };
     
     this.__photosLoaded = jQuery.proxy(this, '_photosLoaded');
+    this.__profileLoaded = jQuery.proxy(this, '_profileLoaded');
   };
 
   
@@ -67,6 +69,16 @@
         vm.prev_page(null);
       }
     },
+    
+    _profileLoaded : function(result) {
+      if (result.hasOwnProperty('error')) {
+        console.warn('Problem getting profile info: ' + result.error);
+        this.ViewModel.Profile({});
+        return;
+      }
+      
+      this.ViewModel.Profile(result);
+    },
 
     
     LoadProfilePhotos : function(profile) {
@@ -82,19 +94,27 @@
       this.Clear();
       
       J.Notifications.Notify('j.facebook.will_load_user_photos', this, [ id, name ]);
+
       this.ViewModel.Loading(true);
-      this.ViewModel.AlbumName(name);
+
       
       FB.api(['/', id, '/photos'].join(''), this.__photosLoaded);
+      
+
+      // Don't make the network call if the album is for the loaded in user
+      if (id !== J.Facebook.Instance.UserId)
+        FB.api(['/', id].join(''), this.__profileLoaded);
+      else
+        this.ViewModel.Profile(J.Facebook.Instance._viewModel.profile());
     },
 
     LoadAlbum : function(id, name) {
       this.Clear();
       this.ViewModel.Loading(true);
-      this.ViewModel.AlbumName(name);
       
       J.Notifications.Notify('j.facebook.will_load_photos', this, null);
       FB.api(['/', id, '/photos'].join(''), this.__photosLoaded);
+      FB.api(['/', id].join(''), this.__profileLoaded);
     },
 
 
