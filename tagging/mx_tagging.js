@@ -13,7 +13,7 @@
       // If the Knockout MVVM library is present we can
       // sort tags and post changes
       if (ko !== undefined) {
-        var tag_scorer = function(tag) { 
+        var tag_scorer = function(tag) {
           result = 0;
           if (J.IsArray(tag.items)) {
             result = tag.items.length;
@@ -50,7 +50,7 @@
         
         while (low <= high) {
           i = Math.floor((low + high) / 2);
-          if (tag_collection[i].text < tag_text) { low = i + 1; continue; };
+          if (tag_collection[i].text < tag_text) { low = i + 1; continue; }
           if (tag_collection[i].text > tag_text) { high = i - 1; continue; }
 
           return tag_collection[i];
@@ -73,7 +73,7 @@
       };
 
       
-      return function(items, property_name) {
+      return function(items, property_name, pos_type) {
         if ((J.IsArray(items) || J.IsObject(items) || J.IsNonEmptyString(items)) === false) {
           console.warn('J.Tagging.MxTagSource: items should be an array, an object or a non-empty string');
           return;
@@ -86,6 +86,7 @@
           return;
         }
         
+        var _pos_type = pos_type || 'JJ';
         var _prop_name = property_name || 'text';
         var lexer = tagging._lexer;
         var tagger = tagging._tagger;
@@ -102,7 +103,7 @@
         var text, words, pos_tags;
         var pos_tag_idx = 0;
         var curr_noun = [];
-        var curr_pos_tag, curr_noun, pos_tag_count;
+        var curr_pos_tag, pos_tag_count;
         var curr_item;
         for (var ctr = 0; ctr < l; ++ctr) {
           curr_item = items[ctr];
@@ -149,7 +150,5 @@
       };
     }())
     
-  }
-  
-  
+  };
 }());
